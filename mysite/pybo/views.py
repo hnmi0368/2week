@@ -1,3 +1,4 @@
+from typing import List
 from django.http import HttpResponse
 from .models import Question
 from django.utils import timezone
@@ -10,7 +11,9 @@ def index(request):
     """
     pybo 목록 출력
     """
-    question_list = Question.objects.order_by('-create_date')
+    # 함수로 빼면 테스트코드 짜기 좋고 controller단 코드가 단순해져서 코드 읽기가 편해집니다 :)
+    # question_list = Question.objects.order_by('-create_date')
+    question: List = get_questions()
     context = {'question_list': question_list}
     return render(request, 'pybo/question_list.html', context)
     return HttpResponse("안녕하세요 pybo에 오신것을 환영합니다.")
@@ -48,6 +51,8 @@ def question_create(request):
     pybo 질문등록
     """
     if request.method == 'POST':
+        # Vaildation 역할도 수행합니다. 
+        # 라이브러리를 사용하지 않는다면 is_valid_question_create(request.POST)
         form = QuestionForm(request.POST)
         if form.is_valid():
             question = form.save(commit=False)
